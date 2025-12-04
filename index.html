@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chai Hui Qing — Portfolio</title>
+  <meta name="description" content="Portfolio of Chai Hui Qing — projects, skills and contact." />
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- ============================
+       SKIP LINK FOR ACCESSIBILITY
+  ============================ -->
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================
+       HEADER + NAVIGATION
+  ============================ -->
+  <header class="site-header" id="header">
+    <div class="container nav-row">
+
+      <!-- Brand / Logo -->
+      <a class="brand" href="#home" data-page="home">Chai Hui Qing</a>
+
+      <!-- Desktop Navigation -->
+      <nav class="main-nav" aria-label="Primary">
+        <ul>
+          <!-- Navigation links with data-page for JS page switching -->
+          <li><a href="#home" class="nav-link" data-page="home">Home</a></li>
+          <li><a href="#projects" class="nav-link" data-page="projects">Projects</a></li>
+          <li><a href="#about" class="nav-link" data-page="about">About Me</a></li>
+	  <li><a href="#resume" class="nav-link" data-page="resume">Resume</a></li>
+          <li><a href="#contact" class="nav-link" data-page="contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Theme Toggle + Mobile Menu Buttons -->
+      <div class="controls">
+        <button id="themeToggle" aria-pressed="false" aria-label="Toggle dark mode">🌙</button>
+        <button id="menuToggle" class="mobile-only" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">☰</button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Navigation (hidden by default) -->
+    <div id="mobileMenu" class="mobile-menu" hidden>
+      <ul>
+        <li><a href="#home" class="nav-link" data-page="home">Home</a></li>
+        <li><a href="#projects" class="nav-link" data-page="projects">Projects</a></li>
+        <li><a href="#about" class="nav-link" data-page="about">About Me</a></li>
+	<li><a href="#resume" class="nav-link" data-page="resume">Resume</a></li>
+        <li><a href="#contact" class="nav-link" data-page="contact">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ============================
+       MAIN CONTENT AREA
+       Each section becomes a "page"
+       using .page class
+  ============================ -->
+  <main id="main">
+
+    <!-- ============================
+         HOME PAGE
+         Only visible on load
+    ============================ -->
+    <section id="home" class="page">
+      <div class="container">
+        <h1 id="home-heading">Hi, I’m <span class="accent">Chai Hui Qing</span></h1>
+        <p>I’m a Multimedia Computing student who enjoys designing clean, modern and user-focused digital experiences.</p>
+        <p>I build websites, mobile apps and simple interactive designs using both creativity and programming skills.</p>
+
+        <!-- Call-to-action buttons -->
+        <p class="cta-row">
+          <a class="btn" href="#projects" data-page="projects">View projects</a>
+          <a class="btn btn-outline" href="#contact" data-page="contact">Contact me</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================
+         PROJECTS PAGE
+    ============================ -->
+    <section id="projects" class="page" style="display:none">
+      <div class="container">
+        <h2 id="projects-heading">Projects</h2>
+
+        <!-- Projects Grid -->
+        <div class="projects-grid" role="list">
+
+          <!-- -------------------
+               PROJECT 1
+          ------------------- -->
+          <article class="project-card" role="listitem"
+            data-project='{
+              "title": "UI/UX Mobile App Prototype",
+              "desc": "A modern, clean UI/UX prototype designed using Figma.",
+              "imageAlt": "UI/UX prototype design preview",
+              "details": "This Figma prototype showcases a full mobile design flow.",
+              "link": "https://www.figma.com/proto/ZKT4R0GjSpQoaZXZPUCqbr/Project-UI-UX?node-id=30-79"
+            }'>
+
+            <!-- Project Image -->
+            <div class="project-media">
+              <img src="UIUX.png" alt="UI/UX Prototype Preview" class="project-img">
+            </div>
+
+            <!-- Project Content -->
+            <div class="project-body">
+              <h3>UI/UX Mobile App Prototype</h3>
+              <p class="project-desc">Mobile UI/UX design created in Figma.</p>
+
+              <!-- Project Actions -->
+              <div class="project-actions">
+                <button class="btn view-details">View details</button>
+                <a class="btn btn-sm" href="https://www.figma.com/proto/ZKT4R0GjSpQoaZXZPUCqbr/Project-UI-UX?node-id=30-79" target="_blank" rel="noopener noreferrer">Open Project</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- -------------------
+               PROJECT 2
+          ------------------- -->
+          <article class="project-card" role="listitem"
+            data-project='{
+              "title": "Fairytale Story Book App",
+              "desc": "A mobile fairytale storybook built with Kotlin.",
+              "imageAlt": "Fairytale App Preview",
+              "details": "Interactive storybook app with illustrations and multiple chapters."
+            }'>
+            <div class="project-media">
+              <img src="fairytale.jpg" alt="Fairytale App Preview" class="project-img">
+            </div>
+
+            <div class="project-content">
+              <h3>Fairytale Story Book App</h3>
+              <p>A fantasy-themed mobile storybook app featuring custom illustrations.</p>
+
+              <a class="project-btn" href="app-debug.apk" download>
+                Download APK
+              </a>
+            </div>
+          </article>
+
+          <!-- -------------------
+               PROJECT 3
+          ------------------- -->
+          <article class="project-card" role="listitem"
+            data-project='{
+              "title": "Object Oriented Software Development Group Project",
+              "desc": "OOP documentation project including diagrams and UI design.",
+              "imageAlt": "OOP Project Document Preview",
+              "details": "Includes class diagrams, UI design, requirements analysis and documentation."
+            }'>
+            <div class="project-media">
+              <img src="oosd.png" alt="OOP Project Document" class="project-img">
+            </div>
+
+            <div class="project-content">
+              <h3>Object-Oriented Software Development Project</h3>
+              <p>A group project focused on designing a budgeting system using OOP principles.</p>
+
+              <a href="ProjectGroup05_TMT2673.pdf" class="project-btn" target="_blank" rel="noopener noreferrer">
+                📄 View Document
+              </a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================
+         ABOUT PAGE
+    ============================ -->
+    <section id="about" class="page" style="display:none">
+      <div class="container two-col">
+
+        <!-- About Text -->
+        <div>
+          <h2 id="about-heading">About Me</h2>
+          <p>My name is Chai Hui Qing, and I am currently pursuing a Bachelor’s Degree in Computer Science (Multimedia Computing). I am passionate about creating visually appealing and user-friendly digital products, especially in the fields of web design, UI/UX design, mobile application development, and game design.</p>
+
+          <p>I enjoy combining creativity and technical skills to design interfaces that are clean, smooth, and meaningful for users. I have hands-on experience with several programming languages including HTML, CSS, JavaScript, Python, C/C++, Java, and Kotlin.</p>
+
+          <p>My goal is to continuously improve my design skills and become a professional designer capable of delivering high-quality digital experiences.</p>
+
+          <!-- Skills -->
+          <h2>Skills</h2>
+          <h3>1. Technical Skills</h3>
+          <ul class="skills-list">
+            <li>HTML, CSS & JavaScript</li>
+            <li>Python</li>
+            <li>C/C++</li>
+            <li>Java</li>
+            <li>Kotlin</li>
+          </ul>
+
+          <h3>2. Creative & Design Skills</h3>
+          <ul class="skills-list">
+            <li>UI/UX Design</li>
+            <li>Wireframing</li>
+            <li>Prototyping</li>
+            <li>Mobile App Design</li>
+            <li>Basic Game Design</li>
+          </ul>
+        </div>
+
+        <!-- Profile Image -->
+        <aside aria-label="Profile">
+          <div class="profile-card">
+            <img src="chai.jpg" alt="Chai Hui Qing" class="profile-img-big">
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- ============================
+         CONTACT PAGE
+    ============================ -->
+    <section id="contact" class="page" style="display:none">
+      <div class="container">
+        <h2 id="contact-heading">Contact</h2>
+        <p class="muted">Email or use the form below.</p>
+
+        <div class="contact-grid">
+
+          <!-- Contact Form -->
+          <form id="contactForm" novalidate>
+            <div class="form-row">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" required minlength="2" />
+              <div class="field-error" id="error-name"></div>
+            </div>
+
+            <div class="form-row">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required />
+              <div class="field-error" id="error-email"></div>
+            </div>
+
+            <div class="form-row">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="5" required minlength="10"></textarea>
+              <div class="field-error" id="error-message"></div>
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="form-row">
+              <button class="btn" type="submit">Send message</button>
+              <button class="btn btn-outline" type="button" id="mailtoBtn">Email me</button>
+            </div>
+
+            <!-- Form Status -->
+            <div id="formStatus" aria-live="polite" role="status"></div>
+          </form>
+
+          <!-- Contact Info -->
+          <div class="contact-info">
+            <h3>Other ways</h3>
+            <p>Email: <a href="mailto:98426@siswa.unimas.my">98426@siswa.unimas.my</a></p>
+            <p>LinkedIn: <a href="https://www.linkedin.com/in/chai-hui-qing-020a65295" target="_blank" rel="noopener noreferrer">https://www.linkedin.com/in/chai-hui-qing-020a65295</a></p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+<!-- RESUME (embedded PDF viewer) -->
+<section id="resume" class="page section" style="display:none">
+  <div class="container">
+
+    <!-- Match other section titles -->
+    <h2 class="section-title">My Resume</h2>
+
+    <div class="resume-viewer-card" style="margin-top:1.5rem;">
+      <iframe
+        src="Chai Hui Qing - CV.pdf"
+        title="Resume — Chai Hui Qing (PDF)"
+        aria-label="Resume document viewer"
+        role="document"
+        loading="lazy"
+        style="width:100%; height:800px; border:1px solid rgba(0,0,0,0.06); border-radius:10px; box-shadow:var(--shadow);">
+      </iframe>
+
+      <p style="margin-top:0.75rem; color:var(--muted);">
+        If the PDF does not load, 
+        <a href="Chai Hui Qing - CV.pdf" target="_blank" rel="noopener noreferrer">
+          open or download the resume (PDF)
+        </a>.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+  <!-- ============================
+       FOOTER
+  ============================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> Chai Hui Qing. Built with HTML, CSS & JavaScript.</p>
+    </div>
+  </footer>
+
+  <!-- ============================
+       PROJECT MODAL
+  ============================ -->
+  <div id="projectModal" class="modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <h3 id="modalTitle">Project Title</h3>
+        <button class="modal-close">✕</button>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-footer">
+        <a id="modalLink" class="btn" href="#" target="_blank" rel="noopener noreferrer">Open Project</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============================
+       MAIN JAVASCRIPT
+  ============================ -->
+  <script src="script.js" defer></script>
+
+</body>
+</html>
+
