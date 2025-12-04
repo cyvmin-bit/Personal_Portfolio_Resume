@@ -944,40 +944,121 @@ body.dark .nav-link::after {
   box-shadow: none !important;
 }
 
-/* === Force hero text & overlay to follow site theme (light vs dark) === */
+/* Fix hero readability for light & dark mode */
+:root{ color-scheme: light dark; } /* hint to browsers */
 
-/* Hint browsers we support both schemes (helps UA behavior) */
-:root { color-scheme: light dark; }
-
-/* Ensure the site-level text variable is respected */
-body:not(.dark) { --text: #0b0b0b; --bg: #ffffff; }
-body.dark     { --text: #f5f7fa; --bg: #0b0c0f; }
-
-/* Make hero content always inherit the theme color */
-#home, 
-#home h1, #home h2, #home p, #home .lead, 
-#home .cta-row, #home .btn, #home a {
+#home,
+#home h1, #home h2, #home p, #home .lead {
   color: var(--text) !important;
 }
 
-/* Light-mode overlay (when user chose LIGHT) — strong enough for readability */
+/* light-mode overlay (default) */
 body:not(.dark) #home::before {
-  background: rgba(255,255,255,0.65) !important;
+  background: rgba(255,255,255,0.45) !important;
   backdrop-filter: blur(2px) !important;
 }
 
-/* Dark-mode overlay (when user chose DARK) */
+/* dark-mode overlay */
 body.dark #home::before {
   background: rgba(0,0,0,0.55) !important;
   backdrop-filter: blur(2px) !important;
 }
 
-/* On small screens reduce blur but keep contrast so text remains readable */
+/* reduce overlay intensity on small screens */
 @media (max-width: 768px) {
-  body:not(.dark) #home::before { background: rgba(255,255,255,0.55) !important; backdrop-filter: blur(1px) !important; }
-  body.dark #home::before     { background: rgba(0,0,0,0.65) !important; backdrop-filter: blur(1px) !important; }
+  body:not(.dark) #home::before { background: rgba(255,255,255,0.55) !important; }
+  body.dark #home::before { background: rgba(0,0,0,0.65) !important; }
 }
 
-/* Force CTA text color (buttons) to be readable on top of overlay */
-#home .btn, #home .btn-outline { color: #fff !important; }
+/* ensure CTA and text in hero inherit visible color */
+#home .btn, #home .btn-outline, #home a { color: inherit !important; }
+
+/* Make the mobile menu & theme toggle clearly visible and accessible */
+
+/* Base button styles for both toggles */
+#menuToggle,
+#themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: var(--card);      /* card matches other UI surfaces */
+  color: var(--text);           /* icon color follows theme text variable */
+  cursor: pointer;
+  transition: background .18s ease, box-shadow .18s ease, transform .12s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+/* Slight lift on hover (desktop/touch) */
+#menuToggle:hover,
+#themeToggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* Strong accessible focus state (keyboard users) */
+#menuToggle:focus,
+#themeToggle:focus {
+  outline: none;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12), 0 0 0 4px rgba(0,123,255,0.12);
+  border-color: rgba(0,123,255,0.28);
+}
+
+/* If header background is light, make button border slightly darker to stand out */
+.site-header { position: relative; }
+.site-header #menuToggle,
+.site-header #themeToggle {
+  border-color: rgba(0,0,0,0.08);
+}
+
+/* Dark mode: keep high contrast */
+body.dark #menuToggle,
+body.dark #themeToggle {
+  background: rgba(255,255,255,0.06); /* subtle glass on dark */
+  color: var(--text);
+  border-color: rgba(255,255,255,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+}
+
+/* Make the hamburger icon itself readable: keep text/icon large */
+#menuToggle,
+#themeToggle {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Ensure mobile-only display still respects breakpoints */
+@media (max-width:699px){
+  .mobile-only { display:inline-block; }
+  #menuToggle { display:inline-flex; }
+}
+
+/* Optional: ensure the menu button contrasts when header has glass blur */
+.site-header.blur-header #menuToggle {
+  background: rgba(255,255,255,0.9);
+}
+
+/* If you use an SVG icon inside, ensure it inherits color */
+#menuToggle svg, #themeToggle svg {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Move profile image to top on mobile */
+@media (max-width: 768px) {
+  .two-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Move the profile card ABOVE the text */
+  .profile-card {
+    order: -1;
+    margin-bottom: 1rem;
+  }
+}
 
