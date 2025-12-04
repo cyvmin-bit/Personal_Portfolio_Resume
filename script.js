@@ -283,15 +283,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 }); // end DOMContentLoaded
 
-var s=document.createElement('style');
-s.id='temp-fix';
-s.innerHTML = `
-  *{box-sizing:border-box}
-  body{font-family: Arial, Helvetica, sans-serif; line-height:1.6; padding:0; margin:0; color:#111}
-  .container{max-width:1080px;margin:0 auto;padding:1.25rem}
-  header.site-header{position:sticky;top:0;background:#fff;padding:.75rem 0;border-bottom:1px solid rgba(0,0,0,.06)}
-  h1{font-size:2rem;margin:1rem 0}
-  .btn{display:inline-block;padding:.6rem 1rem;border-radius:8px;background:#6c63ff;color:#fff;text-decoration:none}
-`;
-document.head.appendChild(s);
-console.log('temporary style injected');
+
