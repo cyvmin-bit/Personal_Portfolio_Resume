@@ -1,1064 +1,286 @@
-/* ==========================================================================
-   styles.css
-   Mobile-first responsive CSS
-   Accessible focus states, animations, and simple dark mode
-   ========================================================================== */
+// Wait until the HTML document is fully loaded and parsed
+// before running any JavaScript that interacts with the DOM
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ---------------------------------------------------
+     HELPER FUNCTIONS
+     q  -> querySelector
+     qa -> querySelectorAll (as array)
+  --------------------------------------------------- */
+  const q = (sel, ctx=document) => ctx.querySelector(sel);
+  const qa = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+  /* ---------------------------------------------------
+     UPDATE CURRENT YEAR IN FOOTER
+  --------------------------------------------------- */
+  const yearEl = q('#year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 
-/* --------------------------------------------------------------------------
-   1.  Basic reset & CSS variables
-   -------------------------------------------------------------------------- */
-:root{
-  --bg: #ffffff;
-  --text: #0b0b0b;
-  --muted: #555;
-  --accent: #0077cc;
-  --card: #f8f8f8;
-  --radius: 10px;
-  --max-width: 1080px;
-  --shadow: 0 6px 18px rgba(0,0,0,0.06);
+  /* ---------------------------------------------------
+     THEME TOGGLE
+     Handles dark/light mode with localStorage support
+  --------------------------------------------------- */
+  const themeToggle = q('#themeToggle');
+  const userPref = localStorage.getItem('theme');
 
-  --transition: 0.25s ease-in-out;
-}
+  const applyTheme = (theme) => {
+    document.body.classList.toggle('dark', theme === 'dark');
+    themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  };
 
-/* Respect system dark preference: alternate root variables */
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg: #0b0c0f;
-    --text: #f3f4f6;
-    --muted: #bfc2c6;
-    --accent: #7fb6ff;
-    --card: #101216;
-    --shadow: 0 6px 18px rgba(255,255,255,0.05);
-  }
-}
+  // Apply saved theme or system preference
+  if (userPref) applyTheme(userPref);
+  else applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
-
-/* --------------------------------------------------------------------------
-   2.  Dark-mode class (image-based background + overlay)
-       Controlled by JS (body.classList.toggle('dark', ...))
-   -------------------------------------------------------------------------- */
-body.dark {
-  --text: #f5f7fa;
-
-  background: url("https://tse4.mm.bing.net/th/id/OIP.fkbk1B34-AUhbwRqrTDccQHaEK?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3") no-repeat center center / cover;
-
-  background-attachment: fixed; /* keeps it still when scrolling */
-  color: var(--text);
-}
-
-/* subtle dark overlay (keeps text readable on image) */
-body.dark::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: rgba(0, 0, 0, 0.45); /* transparency layer */
-  backdrop-filter: blur(2px);
-}
-
-
-/* --------------------------------------------------------------------------
-   3.  Global styles (reset, typography, base layout)
-   -------------------------------------------------------------------------- */
-* { box-sizing: border-box; }
-html,body{ height:100%; }
-body{
-  margin:0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  line-height:1.6;
-  color:var(--text);
-
-  /* ← NEW: soft pastel page background (light mode) */
-  background: radial-gradient(circle at 20% 30%, #d9ecff 0%, #f6e8ff 40%, var(--bg) 85%);
-
-  scroll-behavior:smooth;
-  transition: background var(--transition), color var(--transition);
-}
-
-/* Layout container */
-.container{
-  max-width:var(--max-width);
-  margin:0 auto;
-  padding:1.25rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   4.  Utility animations + accessibility helpers
-   -------------------------------------------------------------------------- */
-
-/* Smooth fade-in */
-.fade-in {
-  animation: fadeIn 0.7s ease-out forwards;
-}
-@keyframes fadeIn {
-  from { opacity:0; transform:translateY(15px); }
-  to { opacity:1; transform:translateY(0); }
-}
-
-/* Skip link for keyboard users */
-.skip-link{
-  position:absolute;
-  left:-999px;
-  top:auto;
-  width:1px;
-  height:1px;
-  overflow:hidden;
-}
-.skip-link:focus{
-  left:1rem;
-  top:1rem;
-  width:auto;
-  height:auto;
-  padding:.5rem .75rem;
-  background:var(--accent);
-  color:white;
-  border-radius:6px;
-  z-index:1000;
-}
-
-
-/* --------------------------------------------------------------------------
-   5.  Header / Navigation
-   -------------------------------------------------------------------------- */
-.site-header{
-  position:sticky;
-  top:0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-  backdrop-filter: blur(6px);
-  border-bottom:1px solid rgba(0,0,0,0.04);
-  z-index:80;
-  transition: var(--transition);
-}
-
-/* Header variant for dark mode (keeps image visible while adding contrast) */
-body.dark .site-header {
-  background: rgba(10, 15, 25, 0.55); /* transparent dark blue overlay */
-  backdrop-filter: blur(12px);        /* smooth glass look */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.nav-row{
-  display:flex;
-  align-items:center;
-  gap:1rem;
-  justify-content:space-between;
-}
-
-.brand{
-  font-weight:700;
-  text-decoration:none;
-  color:var(--text);
-  font-size:1.25rem;
-}
-
-/* Main Navigation list + links */
-.main-nav ul{
-  list-style:none;
-  margin:0;
-  padding:0;
-  display:flex;
-  gap:0.75rem;
-  align-items:center;
-}
-.main-nav a{
-  text-decoration:none;
-  padding:.55rem .7rem;
-  border-radius:8px;
-  color:var(--text);
-  transition: var(--transition);
-}
-.main-nav a:hover,
-.main-nav a:focus{
-  background:var(--card);
-}
-
-/* Controls (theme toggle, mobile menu button) */
-.controls{
-  display:flex;
-  gap:.5rem;
-  align-items:center;
-}
-.controls button{
-  background:none;
-  border:1px solid transparent;
-  padding:.4rem .6rem;
-  border-radius:8px;
-  cursor:pointer;
-  transition: var(--transition);
-}
-.controls button:hover{
-  background:var(--card);
-}
-
-/* Mobile helper (shows only on small screens) */
-.mobile-only{ display:none; }
-
-
-/* --------------------------------------------------------------------------
-   6.  Hero section (top of page)
-       - includes accent class + lead paragraph styling
-   -------------------------------------------------------------------------- */
-.hero{
-  padding:4rem 0;
-  text-align:center;
-}
-.hero .accent{ color:var(--accent); }
-.lead{
-  color:var(--muted);
-  font-size:1.05rem;
-  margin-top:.75rem;
-}
-
-/* CTAs in hero */
-.cta-row{
-  margin-top:1.25rem;
-  display:flex;
-  gap:.75rem;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-
-
-/* --------------------------------------------------------------------------
-   7.  Buttons (primary / outline / small)
-   -------------------------------------------------------------------------- */
-.btn{
-  display:inline-block;
-  padding:.6rem 1.1rem;
-  border-radius:10px;
-  background: #6c63ff;   /* Purple like Download APK */
-  color:white;
-  text-decoration:none;
-  border:none;
-  cursor:pointer;
-  transition: var(--transition);
-}
-
-
-.btn-outline {
-  background: transparent;
-  border: 2px solid #6c63ff;  /* purple border */
-  color: #6c63ff;             /* purple text */
-  transition: 0.25s ease;
-}
-
-.btn-sm{
-  padding:.35rem .6rem;
-  font-size:.9rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   8.  Sections & alternate background
-   -------------------------------------------------------------------------- */
-.section{ padding:3rem 0; }
-.alt{ background:linear-gradient(180deg, rgba(0,0,0,0.02), transparent); }
-
-
-/* --------------------------------------------------------------------------
-   9.  Projects grid and project-card styles
-   -------------------------------------------------------------------------- */
-.projects-grid{
-  display:grid;
-  gap:1rem;
-  margin-top:1rem;
-}
-.project-card{
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  transition: var(--transition);
-}
-.project-card:hover{
-  transform: translateY(-4px);
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
-.project-media{
-  width:100%;
-  height:160px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.project-body{ padding:1rem; }
-.project-actions{
-  margin-top:0.5rem;
-  display:flex;
-  gap:.5rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   10.  About / Profile cards
-   -------------------------------------------------------------------------- */
-.two-col{
-  display:grid;
-  gap:1rem;
-}
-.profile-card{
-  text-align:center;
-  padding:1rem;
-  border-radius:10px;
-  background:var(--card);
-  box-shadow:var(--shadow);
-  transition: var(--transition);
-}
-.profile-card:hover{
-  transform:scale(1.02);
-}
-
-
-/* --------------------------------------------------------------------------
-   11.  Contact form styles
-   -------------------------------------------------------------------------- */
-.contact-grid{
-  display:grid;
-  gap:1rem;
-}
-.form-row{
-  margin-bottom:.75rem;
-  display:flex;
-  flex-direction:column;
-}
-input, textarea{
-  padding:.6rem .75rem;
-  border-radius:8px;
-  border:1px solid rgba(0,0,0,0.08);
-  background:white;
-  transition:var(--transition);
-}
-input:focus, textarea:focus{
-  outline:3px solid rgba(0,123,255,0.12);
-}
-.field-error{
-  color:#b00020;
-  font-size:.9rem;
-  min-height:1.1rem;
-  margin-top:.25rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   12.  Footer
-   -------------------------------------------------------------------------- */
-.site-footer{
-  padding:1.5rem 0;
-  text-align:center;
-  color:var(--muted);
-  border-top:1px solid rgba(0,0,0,0.04);
-}
-
-
-/* --------------------------------------------------------------------------
-   13.  Modal styles (dialog + accessibility states)
-   -------------------------------------------------------------------------- */
-.modal{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,0.45);
-  padding:1rem;
-  z-index:120;
-}
-.modal[aria-hidden="true"]{ display:none; }
-.modal-dialog{
-  background:var(--bg);
-  color:var(--text);
-  width:100%;
-  max-width:720px;
-  border-radius:12px;
-  box-shadow:var(--shadow);
-}
-.modal-header,
-.modal-footer{
-  padding:1rem;
-  border-bottom:1px solid rgba(0,0,0,0.04);
-}
-.modal-footer{
-  border-top:1px solid rgba(0,0,0,0.04);
-  text-align:right;
-}
-.modal-body{ padding:1rem; }
-
-
-/* --------------------------------------------------------------------------
-   14.  Responsive breakpoints (tablet & desktop layouts)
-   -------------------------------------------------------------------------- */
-@media(min-width:700px){
-  .projects-grid{ grid-template-columns: repeat(2, 1fr); }
-  .two-col{ grid-template-columns: 1fr 320px; }
-  .contact-grid{ grid-template-columns: 1fr 320px; gap:2rem; }
-}
-
-@media(min-width:1000px){
-  .projects-grid{ grid-template-columns: repeat(3, 1fr); }
-}
-
-
-/* --------------------------------------------------------------------------
-   15.  Mobile specific behaviour
-   -------------------------------------------------------------------------- */
-@media(max-width:699px){
-  .mobile-only{ display:inline-block; }
-  .main-nav{ display:none; }
-  .mobile-menu{
-    background:var(--bg);
-    border-top:1px solid rgba(0,0,0,0.04);
-    padding:.5rem 0;
+  // Listen for system theme changes, but only auto-switch when user hasn't set a preference
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  if (mq && mq.addEventListener) {
+    mq.addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  } else if (mq && mq.addListener) {
+    // fallback for older browsers
+    mq.addListener((e) => {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
   }
 
-  .mobile-menu ul{
-    list-style:none;
-    padding:0.5rem;
-    margin:0;
-    display:flex;
-    flex-direction:column;
-    gap:.4rem;
-  }
-}
-
-
-/* --------------------------------------------------------------------------
-   16.  Dark-mode specific component overrides (readability & contrast)
-   -------------------------------------------------------------------------- */
-body.dark .site-header {
-  background: linear-gradient(180deg, rgba(10,10,12,0.85), rgba(10,10,12,0.65));
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-/* Nav links readable in dark mode */
-body.dark .main-nav a {
-  color: var(--text);
-}
-body.dark .main-nav a:hover {
-  background: var(--card);
-}
-
-/* Project cards in dark mode */
-body.dark .project-card {
-  background: var(--card);
-  box-shadow: var(--shadow);
-}
-body.dark .project-card:hover {
-  box-shadow: 0 10px 22px rgba(0,0,0,0.65);
-}
-
-/* Profile / About cards in dark mode */
-body.dark .profile-card {
-  background: var(--card);
-  color: var(--text);
-}
-
-/* Inputs in dark mode */
-body.dark input,
-body.dark textarea {
-  background: #1b1d22;
-  border: 1px solid #2b2d32;
-  color: var(--text);
-}
-body.dark input::placeholder,
-body.dark textarea::placeholder {
-  color: #888;
-}
-
-/* Footer in dark mode */
-body.dark .site-footer {
-  color: var(--muted);
-  border-top: 1px solid rgba(255,255,255,0.04);
-}
-
-/* Mobile menu contrast in dark mode */
-body.dark .mobile-menu {
-  background: var(--bg);
-  border-top: 1px solid rgba(255,255,255,0.04);
-}
-body.dark .mobile-menu a {
-  color: var(--text);
-}
-
-/* Modal dialog in dark mode */
-body.dark .modal-dialog {
-  background: var(--card);
-  color: var(--text);
-  box-shadow: var(--shadow);
-}
-
-
-/* --------------------------------------------------------------------------
-   17.  Navbar animation (separate from main header styles)
-   -------------------------------------------------------------------------- */
-
-.header {
-  width: 100%;
-  position: sticky;
-  top: 0;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  z-index: 999;
-}
-
-.nav-container {
-  max-width: var(--max-width);
-  margin: auto;
-  display: flex;
-  padding: 1rem 1.5rem;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-link {
-  position: relative;
-  padding: 4px 0;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.25s;
-}
-
-/* underline animation */
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  height: 2px;
-  width: 0%;
-  background: var(--text);
-  border-radius: 2px;
-  transition: width 0.25s ease;
-}
-
-.nav-link:hover::after,
-.nav-link.active::after {
-  width: 100%;
-}
-
-
-/* --------------------------------------------------------------------------
-   18.  Hero visual effects (floating glow circles, fade animations)
-   -------------------------------------------------------------------------- */
-.hero {
-  position: relative;
-  overflow: hidden;
-
-  /* ← UPDATED: enhanced hero background (light-mode) */
-  background:
-    radial-gradient(circle at 20% 20%, rgba(0,140,255,0.25), transparent 55%),
-    radial-gradient(circle at 80% 80%, rgba(255,80,180,0.25), transparent 55%),
-    linear-gradient(135deg, var(--bg), var(--card));
-
-  animation: homeFade 1s ease-out forwards;
-}
-
-body.dark .hero {
-  /* ← UPDATED: hero background for dark mode */
-  background:
-    radial-gradient(circle at 25% 25%, rgba(140,0,255,0.15), transparent 55%),
-    radial-gradient(circle at 75% 75%, rgba(0,120,255,0.15), transparent 60%),
-    linear-gradient(135deg, #0b0c0f, #16181d);
-}
-
-.hero::before,
-.hero::after {
-  content: "";
-  position: absolute;
-  width: 340px;
-  height: 340px;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.45;
-  z-index: -1;
-  animation: floatGlow 12s infinite ease-in-out alternate;
-}
-
-.hero::before {
-  top: -60px;
-  left: -80px;
-  background: var(--accent);
-}
-
-.hero::after {
-  bottom: -80px;
-  right: -60px;
-  background: #ff74bd;
-  opacity: 0.35;
-}
-
-@keyframes floatGlow {
-  0% { transform: translateY(0) translateX(0); }
-  100% { transform: translateY(40px) translateX(30px); }
-}
-
-/* headline fade-up */
-#home-heading {
-  animation: fadeUp 0.9s ease-out forwards;
-  opacity: 0;
-}
-
-/* text fade-up */
-.lead {
-  animation: fadeUp 1.2s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(25px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* whole hero fade */
-@keyframes homeFade {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* modern CTA button hover lift */
-.btn:hover,
-.btn-outline:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-
-/* --------------------------------------------------------------------------
-   19.  Big card / profile image styles
-   -------------------------------------------------------------------------- */
-.big-card {
-  width: 380px;                /* big card */
-  border-radius: 20px;
-  overflow: hidden;            /* keeps image inside the rounded box */
-  background: #fff;
-  margin: auto;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-  text-align: center;
-  padding-bottom: 20px;        /* spacing for text */
-}
-
-/* Full-size big image */
-.profile-img-big {
-  width: 100%;                 /* fill width */
-  height: 300px;               /* same height = perfect square */
-  object-fit: cover;           /* crop nicely */
-  display: block;
-}
-
-/* Text styling */
-.big-card h3 {
-  margin-top: 20px;
-  margin-bottom: 8px;
-  font-size: 1.4rem;
-}
-
-.role {
-  font-size: 1rem;
-  margin-bottom: 6px;
-}
-
-.muted {
-  color: #555;
-  font-size: 0.95rem;
-}
-
-
-.skills-list {
-  display: flex;
-  gap: 12px;                /* space between items */
-  list-style: none;
-  padding: 0;
-  flex-wrap: wrap;          /* allows wrapping on small screens */
-}
-
-.skills-list li {
-  background: var(--accent-color, #4c8bff);
-  color: white;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  white-space: nowrap;      /* keep item in one line */
-}
-
-
-/* --------------------------------------------------------------------------
-   20.  Project section (alternate, more polished styles)
-   -------------------------------------------------------------------------- */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);  /* exactly 3 equal-width cards */
-  gap: 30px;
-  margin-top: 30px;
-  align-items: stretch;   /* makes all card heights match */
-}
-
-.project-card {
-  background: var(--card);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.project-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-.project-img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;   /* prevents stretching */
-}
-
-.project-content {
-  padding: 20px;
-}
-
-.project-content h3 {
-  margin-bottom: 8px;
-  font-size: 1.3rem;
-}
-
-.project-content p {
-  font-size: 0.95rem;
-  margin-bottom: 15px;
-  line-height: 1.6;
-}
-
-.project-btn {
-  display: inline-block;
-  padding: 10px 18px;
-  background: var(--accent-color, #6c63ff);
-  color: white;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 0.95rem;
-  transition: background .25s ease;
-}
-
-.project-btn:hover {
-  background: var(--accent-hover, #5548d6);
-}
-
-/* Dark mode support */
-body.dark .project-card {
-  background: #1e1e1e;
-}
-
-body.dark .project-btn {
-  background: #7a74ff;
-}
-
-/* Tablet: 2 per row */
-@media (max-width: 900px) {
-  .projects-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Mobile: 1 per row */
-@media (max-width: 600px) {
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Always keep project cards white */
-.project-card {
-  background: #ffffff !important;
-  color: #000 !important;
-}
-
-/* Keep the inner text readable */
-.project-card .project-content,
-.project-card .project-body {
-  color: #000 !important;
-}
-
-/* Make buttons still follow theme (optional) */
-.project-card .project-btn,
-.project-card .btn {
-  color: white !important;
-}
-
-
-/* --------------------------------------------------------------------------
-   21.  Home page custom background (hero image)
-   -------------------------------------------------------------------------- */
-#home {
-  background: url("chai-pic.png") no-repeat center center/cover;
-  color: #000; /* make text readable */
-  padding: 200px 0;
-  position: relative;
-}
-
-/* Optional soft overlay for readability */
-#home::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.5);  /* lighter overlay */
-  backdrop-filter: blur(2px);
-  z-index: 0;
-}
-
-/* Ensure HOME content stays above the overlay */
-#home .container {
-  position: relative;
-  z-index: 2;
-}
-
-/* Mobile should still use cover (full image look) */
-@media (max-width: 768px) {
-  #home {
-    background-size: cover;
-    background-position: center;
-  }
-}
-
-/* === Make hero text use theme variables so it's always readable === */
-#home,
-#home h1, 
-#home h2, 
-#home p,
-#home .lead,
-#home .cta-row,
-#home .btn,
-#home .btn-outline {
-  color: var(--text) !important;
-}
-
-/* Light-mode overlay (keeps image soft, text dark) */
-#home::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: rgba(255,255,255,0.45); /* lighter overlay for readability */
-  backdrop-filter: blur(2px);
-}
-
-/* Dark-mode overlay (only when body.dark present) */
-body.dark #home::before {
-  background: rgba(0,0,0,0.55); /* darker overlay so white text reads */
-  backdrop-filter: blur(2px);
-}
-
-/* Ensure hero content sits above overlay */
-#home .container { position: relative; z-index: 1; }
-
-/* Reduce overlay intensity & blur on small screens for better contrast */
-@media (max-width: 768px) {
-  #home::before { background: rgba(255,255,255,0.35); backdrop-filter: blur(1px); }
-  body.dark #home::before { background: rgba(0,0,0,0.6); backdrop-filter: blur(1px); }
-}
-
-/* If any rules elsewhere force a color, this keeps hero readable */
-#home h1, #home .lead, #home p { color: var(--text) !important; }
-
-
-/* ------------------------------ */
-/* Resume section                 */
-/* ------------------------------ */
-
-.resume-viewer-card {
-  background: var(--card);
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-}
-
-body.dark .resume-viewer-card {
-  background: var(--card);
-  color: var(--text);
-}
-
-.section-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--text);
-}
-
-/* --------------------------
-   NAV: remove active pill + use underline
-   Paste at the end of styles.css
-   -------------------------- */
-
-/* Reset any background on nav links (desktop + mobile) */
-.main-nav a.nav-link,
-.mobile-menu a.nav-link,
-.nav-link {
-  background: transparent !important;   /* remove pill */
-  color: var(--text) !important;
-  padding: .55rem .7rem;                /* keep spacing consistent */
-  border-radius: 8px;                   /* keep radius but background is transparent */
-  box-shadow: none !important;
-}
-
-/* Prevent the rounded "focus" pill when link is focused (keyboard/mouse) */
-.main-nav a.nav-link:focus,
-.mobile-menu a.nav-link:focus,
-.nav-link:focus {
-  background: transparent !important;
-  outline: 2px solid transparent;       /* keep keyboard focus accessible via show-focus class */
-}
-
-/* Use the underline animation to indicate the active link (instead of a filled pill) */
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;                 /* slightly below text */
-  left: 0;
-  height: 2px;
-  width: 0%;
-  background: var(--text);
-  border-radius: 2px;
-  transition: width 0.25s ease;
-}
-
-/* Show the underline when hovered or active */
-.nav-link:hover::after,
-.nav-link.active::after {
-  width: 100%;
-}
-
-/* If your header uses a different color in dark mode, ensure underline remains visible */
-body.dark .nav-link::after {
-  background: var(--text);
-}
-
-/* Remove any white "pill" added by other rules for .active (force transparent) */
-.nav-link.active,
-.nav-link.active:focus,
-.nav-link.active:hover {
-  background: transparent !important;
-  color: var(--text) !important;
-  box-shadow: none !important;
-}
-
-/* Fix hero readability for light & dark mode */
-:root{ color-scheme: light dark; } /* hint to browsers */
-
-#home,
-#home h1, #home h2, #home p, #home .lead {
-  color: var(--text) !important;
-}
-
-/* light-mode overlay (default) */
-body:not(.dark) #home::before {
-  background: rgba(255,255,255,0.45) !important;
-  backdrop-filter: blur(2px) !important;
-}
-
-/* dark-mode overlay */
-body.dark #home::before {
-  background: rgba(0,0,0,0.55) !important;
-  backdrop-filter: blur(2px) !important;
-}
-
-/* reduce overlay intensity on small screens */
-@media (max-width: 768px) {
-  body:not(.dark) #home::before { background: rgba(255,255,255,0.55) !important; }
-  body.dark #home::before { background: rgba(0,0,0,0.65) !important; }
-}
-
-/* ensure CTA and text in hero inherit visible color */
-#home .btn, #home .btn-outline, #home a { color: inherit !important; }
-
-/* Make the mobile menu & theme toggle clearly visible and accessible */
-
-/* Base button styles for both toggles */
-#menuToggle,
-#themeToggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.06);
-  background: var(--card);      /* card matches other UI surfaces */
-  color: var(--text);           /* icon color follows theme text variable */
-  cursor: pointer;
-  transition: background .18s ease, box-shadow .18s ease, transform .12s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-}
-
-/* Slight lift on hover (desktop/touch) */
-#menuToggle:hover,
-#themeToggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-}
-
-/* Strong accessible focus state (keyboard users) */
-#menuToggle:focus,
-#themeToggle:focus {
-  outline: none;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12), 0 0 0 4px rgba(0,123,255,0.12);
-  border-color: rgba(0,123,255,0.28);
-}
-
-/* If header background is light, make button border slightly darker to stand out */
-.site-header { position: relative; }
-.site-header #menuToggle,
-.site-header #themeToggle {
-  border-color: rgba(0,0,0,0.08);
-}
-
-/* Dark mode: keep high contrast */
-body.dark #menuToggle,
-body.dark #themeToggle {
-  background: rgba(255,255,255,0.06); /* subtle glass on dark */
-  color: var(--text);
-  border-color: rgba(255,255,255,0.06);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.45);
-}
-
-/* Make the hamburger icon itself readable: keep text/icon large */
-#menuToggle,
-#themeToggle {
-  font-size: 20px;
-  line-height: 1;
-}
-
-/* Ensure mobile-only display still respects breakpoints */
-@media (max-width:699px){
-  .mobile-only { display:inline-block; }
-  #menuToggle { display:inline-flex; }
-}
-
-/* Optional: ensure the menu button contrasts when header has glass blur */
-.site-header.blur-header #menuToggle {
-  background: rgba(255,255,255,0.9);
-}
-
-/* If you use an SVG icon inside, ensure it inherits color */
-#menuToggle svg, #themeToggle svg {
-  fill: currentColor;
-  stroke: none;
-}
-
-/* Move profile image to top on mobile */
-@media (max-width: 768px) {
-  .two-col {
-    display: flex;
-    flex-direction: column;
+  // Toggle theme on button click
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark');
+    const theme = isDark ? 'dark' : 'light';
+    applyTheme(theme);
+    localStorage.setItem('theme', theme);
+  });
+
+
+  /* ---------------------------------------------------
+     MOBILE MENU TOGGLE
+     Handles opening/closing of mobile nav
+  --------------------------------------------------- */
+  const menuToggle = q('#menuToggle');
+  const mobileMenu = q('#mobileMenu');
+
+  if (menuToggle && mobileMenu) {
+    // Toggle menu visibility
+    menuToggle.addEventListener('click', () => {
+      const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+      menuToggle.setAttribute('aria-expanded', String(!expanded));
+      mobileMenu.hidden = expanded;
+    });
+
+    // Close mobile menu when a link is clicked
+    qa('.nav-link', mobileMenu).forEach(a =>
+      a.addEventListener('click', () => {
+        mobileMenu.hidden = true;
+        menuToggle.setAttribute('aria-expanded', 'false');
+      })
+    );
   }
 
-  /* Move the profile card ABOVE the text */
-  .profile-card {
-    order: -1;
-    margin-bottom: 1rem;
+
+  /* ====================================================
+     SCROLLSPY
+     Highlights nav links based on scroll position
+  ===================================================== */
+  const sectionsNEW = document.querySelectorAll("section");
+  const navLinksNEW = document.querySelectorAll(".nav-link");
+
+  window.addEventListener("scroll", () => {
+    let current = "";
+
+    sectionsNEW.forEach((section) => {
+      const top = window.scrollY;
+      const offset = section.offsetTop - 140; // Adjust for header height
+      const height = section.offsetHeight;
+
+      if (top >= offset && top < offset + height) {
+        current = section.getAttribute("id");
+      }
+    });
+
+    navLinksNEW.forEach((link) => {
+      link.classList.remove("active");
+      if (link.getAttribute("href") === `#${current}`) {
+        link.classList.add("active");
+      }
+    });
+  });
+
+
+  /* ---------------------------------------------------
+     PROJECT MODAL
+     Handles opening/closing project details modal
+  --------------------------------------------------- */
+  const projectCards = qa('.project-card');
+  const modal = q('#projectModal');
+  const modalTitle = q('#modalTitle');
+  const modalBody = q('#modalBody');
+  const modalLink = q('#modalLink');
+  const modalClose = q('.modal-close');
+
+  const openModal = (data) => {
+    modalTitle.textContent = data.title;
+    modalBody.textContent = data.details || data.desc || 'No details provided.';
+    modalLink.href = data.link || "#";
+    modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
+    modalClose.focus();
+  };
+
+  const closeModal = () => {
+    modal.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
+  };
+
+  // Bind click events on project cards
+  projectCards.forEach(card => {
+    const btn = card.querySelector('.view-details');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const raw = card.getAttribute('data-project');
+        let data = {};
+        try { data = JSON.parse(raw); }
+        catch(e){ data = { title: card.querySelector('h3').textContent }; }
+        openModal(data);
+      });
+    }
+  });
+
+  // Modal close buttons and outside click
+  if (modalClose) modalClose.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal();
+  });
+
+
+  /* ---------------------------------------------------
+     CONTACT FORM
+     Front-end validation + mailto button
+  --------------------------------------------------- */
+  const contactForm = q('#contactForm');
+  const formStatus = q('#formStatus');
+  const mailtoBtn = q('#mailtoBtn');
+
+  // Helper: show/hide field error
+  function showFieldError(id, message) {
+    const el = q(`#${id}`);
+    const err = q(`#error-${id}`);
+    if (err) err.textContent = message || '';
+    if (el) el.setAttribute('aria-invalid', !!message);
   }
-}
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Reset errors
+      ['name','email','message'].forEach(id => showFieldError(id,''));
+
+      const name = q('#name').value.trim();
+      const email = q('#email').value.trim();
+      const message = q('#message').value.trim();
+      let valid = true;
+
+      // Validate fields
+      if (name.length < 2) { showFieldError('name','Please enter your name.'); valid = false; }
+      if (!/^\S+@\S+\.\S+$/.test(email)) { showFieldError('email','Invalid email.'); valid = false; }
+      if (message.length < 10) { showFieldError('message','Message too short.'); valid = false; }
+
+      if (!valid) {
+        formStatus.textContent = 'Fix errors and try again.';
+        return;
+      }
+
+      formStatus.textContent = 'Message validated (front-end only).';
+      contactForm.reset();
+    });
+
+    // Mailto button click
+    if (mailtoBtn) {
+      mailtoBtn.addEventListener('click', () => {
+        window.location.href =
+          `mailto:chaihuiqing@example.com?subject=Contact&body=Hi`;
+      });
+    }
+  }
+
+
+  /* ---------------------------------------------------
+     ACCESSIBILITY FOCUS TRAP
+     Prevent focus from leaving modal when open
+  --------------------------------------------------- */
+  document.addEventListener('focus', function(e){
+    if (modal.getAttribute('aria-hidden') === 'false' && !modal.contains(e.target)) {
+      e.stopPropagation();
+      modalClose.focus();
+    }
+  }, true);
+
+  // Show focus outlines only when tabbing
+  (function keyboardOutline(){
+    function handleFirstTab(e){ 
+      if (e.key === 'Tab') {
+        document.body.classList.add('show-focus');
+        window.removeEventListener('keydown', handleFirstTab);
+      }
+    }
+    window.addEventListener('keydown', handleFirstTab);
+  })();
+
+
+  /* ---------------------------------------------------
+     CLOSE MOBILE MENU ON SCROLL
+  --------------------------------------------------- */
+  window.addEventListener('scroll', () => {
+    if (mobileMenu && !mobileMenu.hidden) {
+      mobileMenu.hidden = true;
+      menuToggle.setAttribute('aria-expanded','false');
+    }
+  });
+
+
+  /* ---------------------------------------------------
+     SIMPLE PAGE ROUTER
+     Shows one page at a time based on hash
+  --------------------------------------------------- */
+  const allPages = qa('.page');
+
+  function showPage(pageID) {
+    allPages.forEach(p => p.style.display = 'none');
+    const page = q(`#${pageID}`);
+    if (page) page.style.display = 'block';
+  }
+
+  function handleRoute() {
+    let hash = location.hash.replace('#', '').trim();
+    if (!hash) hash = 'home';
+    showPage(hash);
+  }
+
+  window.addEventListener('hashchange', handleRoute);
+  handleRoute();
+
+
+  /* ---------------------------------------------------
+     Optional: resume download click handler (non-essential)
+     Placed here so it can use q() helper
+  --------------------------------------------------- */
+  const downloadResumeBtn = q('#downloadResume');
+  if (downloadResumeBtn) {
+    downloadResumeBtn.addEventListener('click', () => {
+      // simple console log for debugging; remove if not needed
+      console.log('Resume download clicked');
+    });
+  }
+
+}); // end DOMContentLoaded
 
