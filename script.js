@@ -25,18 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const userPref = localStorage.getItem('theme');
 
   const applyTheme = (theme) => {
-  const isDark = theme === 'dark';
-  document.body.classList.toggle('dark', isDark);
-
-  // set CSS variables explicitly so the site looks correct even if UA forces dark
-  document.documentElement.style.setProperty('--text', isDark ? '#f5f7fa' : '#0b0b0b');
-  document.documentElement.style.setProperty('--bg',   isDark ? '#0b0c0f' : '#ffffff');
-
-  if (themeToggle) {
-    themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-    themeToggle.textContent = isDark ? '☀️' : '🌙';
-  }
-};
+    document.body.classList.toggle('dark', theme === 'dark');
+    themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  };
 
   // Apply saved theme or system preference
   if (userPref) applyTheme(userPref);
